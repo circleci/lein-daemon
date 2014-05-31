@@ -1,4 +1,4 @@
-(defproject circleci/lein-daemon "0.5.6"
+(defproject circleci/lein-daemon "0.5.8"
   :description "A lein plugin that daemonizes a clojure process"
   :url "https://github.com/circleci/lein-daemon"
   :license {:name "Eclipse Public License"}
