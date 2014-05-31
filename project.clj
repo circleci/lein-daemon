@@ -5,4 +5,4 @@
   :eval-in-leiningen true
   :profiles {:dev
              {:dependencies
-              [[bond "0.2.3" :exclusions [org.clojure/clojure]]]}})
+              [[bond "0.2.6" :exclusions [org.clojure/clojure]]]}})
