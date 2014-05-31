@@ -47,8 +47,8 @@
   [project alias]
   (and (pid-present? project alias) (not (running? project alias))))
 
-(defn wait-for-running [project alias & {:keys [timeout]
-                                         :or {timeout 300}}]
+(defn wait-for-running [project alias timeout]
+  (println (format "timeout: %s" timeout))
   (println "waiting for pid file to appear at" (common/get-pid-path project alias))
   (wait-for #(running? project alias)
             #(common/throwf (format "%s failed to start in %s seconds" alias timeout)) timeout)
@@ -58,8 +58,7 @@
   (System/getProperty "leiningen.script"))
 
 (defn do-start [project alias args]
-  (let [timeout (* 5 60)
-        arg-str (str/join " " args)
+  (let [arg-str (str/join " " args)
         alias (name alias)
         log-file (format "%s.log" alias)
         lein (get-lein-script)
@@ -68,7 +67,7 @@
     (when-not lein
       (abort "lein-daemon requires lein-2.0.0-RC1 or later"))
     (common/sh! "bash" "-c" nohup-cmd)
-    (wait-for-running project alias)))
+    (wait-for-running project alias (get-in project [:daemon alias :timeout] 300))))
 
 (defn start-main
   [project alias args]
@@ -120,7 +119,7 @@ On the start call, any additional arguments will be passed to -main
 
 USAGE: lein daemon start foo bar baz
 "
-  [project & [command daemon-name & args :as all-args]]
+  [project & [command daemon-name & args]]
   (when (or (nil? command)
             (nil? daemon-name))
     (abort (help-for "daemon")))
