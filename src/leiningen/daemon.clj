@@ -48,7 +48,6 @@
   (and (pid-present? project alias) (not (running? project alias))))
 
 (defn wait-for-running [project alias timeout]
-  (println (format "timeout: %s" timeout))
   (println "waiting for pid file to appear at" (common/get-pid-path project alias))
   (wait-for #(running? project alias)
             #(common/throwf (format "%s failed to start in %s seconds" alias timeout)) timeout)
@@ -59,6 +58,7 @@
 
 (defn do-start [project alias args]
   (let [arg-str (str/join " " args)
+        timeout (get-in project [:daemon alias :timeout] 300)
         alias (name alias)
         log-file (format "%s.log" alias)
         lein (get-lein-script)
@@ -67,7 +67,7 @@
     (when-not lein
       (abort "lein-daemon requires lein-2.0.0-RC1 or later"))
     (common/sh! "bash" "-c" nohup-cmd)
-    (wait-for-running project alias (get-in project [:daemon alias :timeout] 300))))
+    (wait-for-running project alias timeout)))
 
 (defn start-main
   [project alias args]
